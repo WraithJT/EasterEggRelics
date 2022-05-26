@@ -1,0 +1,13 @@
+﻿{
+  "AssemblyName": "EasterEggRelics.dll",
+  "Author": "WraithJT",
+  "DisplayName": "Easter Egg Relics",
+  "EntryMethod": "EasterEggRelics.Main.Load",
+  "GameVersion": "1.3.0",
+  "HomePage": "https://github.com/WraithJT/EasterEggRelics",
+  "Id": "EasterEggRelics",
+  "ManagerVersion": "0.23.0",
+  "Repository": "https://raw.githubusercontent.com/WraithJT/EasterEggRelics/master/repository.json",
+  "Requirements": [],
+  "Version": "0.0.1"
+}
