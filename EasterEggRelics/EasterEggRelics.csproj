@@ -79,7 +79,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="NewContent\" />
+    <None Update="Info.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <Target Name="ILRepack" AfterTargets="Build">

@@ -40,7 +40,7 @@ namespace EasterEggRelics
 
             Tools.AddGUIOption("Companion Ascension",
                 "Enables the Ascension of Companions. Disabling this setting will disable all Companion Ascension features",
-                ref Settings.useCompanionAscension);
+                ref Settings.useEasterEggRelics);
         }
 
         static void OnSaveGUI(UnityModManager.ModEntry modEntry)
