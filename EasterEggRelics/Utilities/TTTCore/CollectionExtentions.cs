@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasterEggRelics.Utilities.TTTCore
+namespace RelicsOfTheRighteous.Utilities.TTTCore
 {
     /// <summary>
     /// Collection of extentions for interacting with normal C# collections.

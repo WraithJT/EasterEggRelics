@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityModManagerNet;
 
-namespace EasterEggRelics.Utilities.TTTCore
+namespace RelicsOfTheRighteous.Utilities.TTTCore
 {
     public class AssetLoader
     {

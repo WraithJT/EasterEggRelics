@@ -17,7 +17,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace EasterEggRelics.Utilities.TTTCore
+namespace RelicsOfTheRighteous.Utilities.TTTCore
 {
     /// <summary>
     /// Collection of miscellaneous utilities

@@ -1,21 +1,21 @@
-﻿using EasterEggRelics.Utilities;
+﻿using RelicsOfTheRighteous.Utilities;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
 
-namespace EasterEggRelics
+namespace RelicsOfTheRighteous
 {
     public class Main
     {
         internal static UnityModManager.ModEntry.ModLogger logger;
-        internal static UnityModManager.ModEntry ModContext_EER;
+        internal static UnityModManager.ModEntry ModContext_RotR;
         public static Settings Settings;
         public static bool Enabled;
 
         static bool Load(UnityModManager.ModEntry modEntry)
         {
             var harmony = new Harmony(modEntry.Info.Id);
-            ModContext_EER = modEntry;
+            ModContext_RotR = modEntry;
             //Harmony.DEBUG = true;
             logger = modEntry.Logger;
             Settings = Settings.Load<Settings>(modEntry);
@@ -40,7 +40,7 @@ namespace EasterEggRelics
 
             Tools.AddGUIOption("Companion Ascension",
                 "Enables the Ascension of Companions. Disabling this setting will disable all Companion Ascension features",
-                ref Settings.useEasterEggRelics);
+                ref Settings.useRelicsOfTheRighteous);
         }
 
         static void OnSaveGUI(UnityModManager.ModEntry modEntry)

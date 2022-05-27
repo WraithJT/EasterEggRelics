@@ -1,13 +1,13 @@
 ﻿{
-  "AssemblyName": "EasterEggRelics.dll",
+  "AssemblyName": "RelicsOfTheRighteous.dll",
   "Author": "WraithJT",
-  "DisplayName": "Easter Egg Relics",
-  "EntryMethod": "EasterEggRelics.Main.Load",
+  "DisplayName": "Relics of the Righteous",
+  "EntryMethod": "RelicsOfTheRighteous.Main.Load",
   "GameVersion": "1.3.0",
-  "HomePage": "https://github.com/WraithJT/EasterEggRelics",
-  "Id": "EasterEggRelics",
+  "HomePage": "https://github.com/WraithJT/RelicsOfTheRighteous",
+  "Id": "RelicsOfTheRighteous",
   "ManagerVersion": "0.23.0",
-  "Repository": "https://raw.githubusercontent.com/WraithJT/EasterEggRelics/master/repository.json",
+  "Repository": "https://raw.githubusercontent.com/WraithJT/RelicsOfTheRighteous/master/repository.json",
   "Requirements": [],
-  "Version": "0.0.1"
+  "Version": "0.0.2"
 }

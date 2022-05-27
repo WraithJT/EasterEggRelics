@@ -87,13 +87,13 @@
   <Target Name="ILRepack" AfterTargets="Build">
     <ItemGroup>
       <InputAssemblies Include="BlueprintCore.dll" />
-      <InputAssemblies Include="EasterEggRelics.dll" />
-      <OutputAssembly Include="EasterEggRelics.dll" />
+      <InputAssemblies Include="RelicsOfTheRighteous.dll" />
+      <OutputAssembly Include="RelicsOfTheRighteous.dll" />
     </ItemGroup>
 
     <Message Text="Merging: @(InputAssemblies) into @(OutputAssembly)" Importance="High" />
 
-    <ILRepack OutputType="Dll" MainAssembly="EasterEggRelics.dll" OutputAssembly="@(OutputAssembly)" InputAssemblies="@(InputAssemblies)" WorkingDirectory="$(OutputPath)" />
+    <ILRepack OutputType="Dll" MainAssembly="RelicsOfTheRighteous.dll" OutputAssembly="@(OutputAssembly)" InputAssemblies="@(InputAssemblies)" WorkingDirectory="$(OutputPath)" />
   </Target>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿//Mostly taken from Vek17's Tabletop Tweaks: https://github.com/Vek17/TabletopTweaks-Core
 using UnityEngine;
 
-namespace EasterEggRelics.Utilities
+namespace RelicsOfTheRighteous.Utilities
 {
     public static class Tools
     {

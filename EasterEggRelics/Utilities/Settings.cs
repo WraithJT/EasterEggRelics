@@ -1,10 +1,10 @@
 ﻿using UnityModManagerNet;
 
-namespace EasterEggRelics.Utilities
+namespace RelicsOfTheRighteous.Utilities
 {
     public class Settings : UnityModManager.ModSettings
     {
-        public bool useEasterEggRelics = true;
+        public bool useRelicsOfTheRighteous = true;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {
