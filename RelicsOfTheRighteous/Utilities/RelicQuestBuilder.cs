@@ -40,6 +40,11 @@ using Kingmaker.Blueprints.Quests;
 using RelicsOfTheRighteous.Utilities.TTTCore;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Designers.Quests.Common;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
+using System.Linq;
+using System.Collections.Generic;
+using Kingmaker.UI.Common;
+using Kingmaker.Blueprints.Items.Equipment;
 
 namespace RelicsOfTheRighteous.Utilities
 {
@@ -59,7 +64,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.GreatFail,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -67,7 +72,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.Fail,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -75,7 +80,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.Success,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = counselorSuccessActions,
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -83,7 +88,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.GreatSuccess,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -106,7 +111,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.GreatFail,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -114,7 +119,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.Fail,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -122,7 +127,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.Success,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = strategistActionsList,
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -130,7 +135,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.GreatSuccess,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -169,7 +174,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.GreatFail,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -177,7 +182,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.Fail,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -185,7 +190,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.Success,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = diplomatActionsList,
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -193,7 +198,7 @@ namespace RelicsOfTheRighteous.Utilities
                     new EventResult {
                         Margin = EventResult.MarginType.GreatSuccess,
                         LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = new ConditionsChecker{ Operation = Operation.And, Conditions = new Condition[]{ } },
+                        Condition = Constants.Empty.Conditions,
                         Actions = new ActionList(){ },
                         StatChanges = new KingdomStats.Changes(){ },
                         SuccessCount = 0
@@ -278,7 +283,13 @@ namespace RelicsOfTheRighteous.Utilities
             return reforgeProject;
         }
 
-        public static BlueprintCrusadeEvent BuildReforgingEvent(string name, string guid, string displayName, string Description)
+        public static BlueprintCrusadeEvent BuildReforgingEvent(string name, string guid, string displayName, string description, RelicSolution solution)
+        {
+            RelicSolution[] solutions = new RelicSolution[] { solution };
+            return BuildReforgingEvent(name, guid, displayName, description, solutions);
+        }
+
+        public static BlueprintCrusadeEvent BuildReforgingEvent(string name, string guid, string displayName, string description, RelicSolution[] solutions)
         {
             PossibleEventSolutions emptySolutions = new();
             emptySolutions.Entries.AddItem(Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Counselor; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; }));
@@ -286,14 +297,27 @@ namespace RelicsOfTheRighteous.Utilities
             emptySolutions.Entries.AddItem(Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Diplomat; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; }));
             emptySolutions.Entries.AddItem(Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.General; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; }));
 
-            EventSolution[] reforgingEventSolutions = new EventSolution[]
+            List<EventSolution> reforgingEventSolutions = new();
+            foreach (RelicSolution rs in solutions)
             {
-                    Helpers.Create<EventSolution>(c=>{  })
-            };
+                var ab = ActionsBuilder.New();
+                if (rs.Item is BlueprintItemEquipmentHand) { ab.GiveHandSlotItemToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
+                else if (rs.Item is BlueprintItemEquipment) { ab.GiveEquipmentToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
+                else { ab.GiveItemToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
+                EventSolution es = Helpers.Create<EventSolution>(c =>
+                {
+                    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), rs.SolutionText, false);
+                    c.m_AvailConditions = Constants.Empty.Conditions;
+                    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    c.m_SuccessEffects = ab.UnlockFlag(rs.Flag, flagValue: 1).Build();
+                    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), rs.ResultText, false);
+                });
+                reforgingEventSolutions.AddItem(es);
+            }
 
             var reforgingEvent = CrusadeEventConfigurator.New(name, guid)
                 .SetLocalizedName(LocalizationTool.CreateString(name + "NameKey", displayName, false))
-                .SetLocalizedDescription(LocalizationTool.CreateString(name + "DescriptionKey", Description, false))
+                .SetLocalizedDescription(LocalizationTool.CreateString(name + "DescriptionKey", description, false))
                 .SetTriggerCondition(ConditionsBuilder.New())
                 .SetResolutionTime(14)
                 .SetResolveAutomatically(false)
@@ -305,10 +329,18 @@ namespace RelicsOfTheRighteous.Utilities
                 .SetDefaultResolutionType(LeaderType.Counselor)
                 .SetAIStopping(false)
                 .SetSolutions(emptySolutions)
-                .SetEventSolutions(reforgingEventSolutions)
+                .SetEventSolutions(reforgingEventSolutions.ToArray())
                 .Configure();
 
             return reforgingEvent;
         }
+    }
+
+    public class RelicSolution
+    {
+        public string SolutionText;
+        public BlueprintItem Item;
+        public BlueprintUnlockableFlag Flag;
+        public string ResultText;
     }
 }
