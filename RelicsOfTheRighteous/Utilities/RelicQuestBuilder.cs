@@ -45,6 +45,8 @@ using System.Linq;
 using System.Collections.Generic;
 using Kingmaker.UI.Common;
 using Kingmaker.Blueprints.Items.Equipment;
+using System.Collections;
+using static Kingmaker.UI.Common.ItemsFilter;
 
 namespace RelicsOfTheRighteous.Utilities
 {
@@ -332,11 +334,17 @@ namespace RelicsOfTheRighteous.Utilities
                 .SetEventSolutions(reforgingEventSolutions.ToArray())
                 .Configure();
 
+
             return reforgingEvent;
+        }
+
+        public static void Test(ItemType blueprintItem)
+        {
+            
         }
     }
 
-    public class RelicSolution
+    public class RelicSolution 
     {
         public string SolutionText;
         public BlueprintItem Item;

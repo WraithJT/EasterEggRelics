@@ -45,6 +45,10 @@ using System.Collections.Generic;
 using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.Blueprints.Items.Equipment;
 using Kingmaker.Localization;
+using System.Linq;
+using BlueprintCore.Blueprints.Configurators.Items.Weapons;
+using Kingmaker.View.Equipment;
+using BlueprintCore.Blueprints.Configurators.AreaLogic.Etudes;
 
 namespace RelicsOfTheRighteous.NewContent.KingdomProjects
 {
@@ -55,9 +59,7 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
         public static readonly string ProjectGuid = "bfc04a80c017481eacd4d53faaaf6410";
         private static readonly string ProjectName = BaseName + "_ReforgeProject";
         private static readonly string ProjectDisplayName = "The Fate of The Blade of No Escape";
-        //private static readonly string ProjectDisplayNameKey = "HadesBlade_ReforgeProjectDisplayNameKey";
         private static readonly string ProjectDescription = "A skilled craftsman can do some work on the relic.";
-        //private static readonly string ProjectDescriptionKey = "HadesBlade_ReforgeProjectDescriptionKey";
 
 
 
@@ -79,18 +81,120 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
 
             public static void PatchHadesSword_ReforgeProject()
             {
+                // testing references
+                var LongswordPlus1 = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("03d706655c07d804cb9d5a5583f9aec5");
+                var DaggerPlus1 = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("2a45458f776442e43bba57de65f9b738");
+                // end testing references
+
+                // Required references
                 KingdomRoot kingdomRoot = ResourcesLibrary.TryGetBlueprint<KingdomRoot>("f6bd33651fb0ad64d8fa659d3df6e7df");
-                //string HadesBlade_EasterEggGuid = "372e460865964e4a8e98ebf73f0741ae";
+                BlueprintQuestObjective Obj4_1 = ResourcesLibrary.TryGetBlueprint<BlueprintQuestObjective>("50820c80a44743ab8e29d36aef9c03d2");
+
+                // Relic quest initiating item
                 BlueprintItemWeapon HadesBlade_EasterEgg = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("372e460865964e4a8e98ebf73f0741ae");
 
+                // Component variables
+                string unlockFlag1Name = "";
+                string unlockFlag1Guid = BlueprintGuid.NewGuid().ToString();
+                string unlockFlag2Name = "";
+                string unlockFlag2Guid = BlueprintGuid.NewGuid().ToString();
+
+                string finalItem1_Enchant1Name = "";
+                string finalItem1_Enchant1Guid = BlueprintGuid.NewGuid().ToString();
+                string finalItem1_Enchant2Name = "";
+                string finalItem1_Enchant2Guid = BlueprintGuid.NewGuid().ToString();
+                string finalItem1_Enchant3Name = "";
+                string finalItem1_Enchant3Guid = BlueprintGuid.NewGuid().ToString();
+
+                string finalItem2_Enchant1Name = "";
+                string finalItem2_Enchant1Guid = BlueprintGuid.NewGuid().ToString();
+                string finalItem2_Enchant2Name = "";
+                string finalItem2_Enchant2Guid = BlueprintGuid.NewGuid().ToString();
+                string finalItem2_Enchant3Name = "";
+                string finalItem2_Enchant3Guid = BlueprintGuid.NewGuid().ToString();
+
+                string intermediateItem1Name = "";
+                string intermediateItem1Guid = BlueprintGuid.NewGuid().ToString();
+
+                string intermediateItem2Name = "";
+                string intermediateItem2Guid = BlueprintGuid.NewGuid().ToString();
+
+                string enchantingEventName = "";
+                string enchantingEventGuid = BlueprintGuid.NewGuid().ToString();
+
+                string item1_EnchantingDecreeName = "";
+                string item1_EnchantingDecreeGuid = BlueprintGuid.NewGuid().ToString();
+
+                string item2_EnchantingDecreeName = "";
+                string item2_EnchantingDecreeGuid = BlueprintGuid.NewGuid().ToString();
+
+                string reforgeEventName = "";
+                string reforgeEventGuid = BlueprintGuid.NewGuid().ToString();
+
+                string reforgeDecreeName = "";
+                string reforgeDecreeGuid = BlueprintGuid.NewGuid().ToString();
+
+                string etudeName = "";
+                string etudeGuid = BlueprintGuid.NewGuid().ToString();
+
+
+                // Base config items
+
+
+
                 /*/ NOTES
-                 * build items for all stages
                  * figure out Choice Effects preview (TextTemplateEngine, s_TemplatesByTag)
                  * 
-                /*/ 
+                /*/
 
+                // One UnlockableFlag for each item type (sword, ring, usable item, etc)
+                var unlockFlag1 = UnlockableFlagConfigurator.New(unlockFlag1Name, unlockFlag1Guid).Configure();
+                var unlockFlag2 = UnlockableFlagConfigurator.New(unlockFlag2Name, unlockFlag2Guid).Configure();
 
+                // One final item for each item type and enchantment path. All items share the same enchantment paths
+                var finalItem1_Enchant1 = ItemConfigurator.New(finalItem1_Enchant1Name, finalItem1_Enchant1Guid).Configure();
+                var finalItem1_Enchant2 = ItemConfigurator.New(finalItem1_Enchant2Name, finalItem1_Enchant2Guid).Configure();
+                var finalItem1_Enchant3 = ItemConfigurator.New(finalItem1_Enchant3Name, finalItem1_Enchant3Guid).Configure();
 
+                var finalItem2_Enchant1 = ItemConfigurator.New(finalItem2_Enchant1Name, finalItem2_Enchant1Guid).Configure();
+                var finalItem2_Enchant2 = ItemConfigurator.New(finalItem2_Enchant2Name, finalItem2_Enchant2Guid).Configure();
+                var finalItem2_Enchant3 = ItemConfigurator.New(finalItem2_Enchant3Name, finalItem2_Enchant3Guid).Configure();
+
+                // One intermediate item for each item type
+                var intermediateItem1 = ItemConfigurator.New(intermediateItem1Name, intermediateItem1Guid).Configure();
+                var intermediateItem2 = ItemConfigurator.New(intermediateItem2Name, intermediateItem2Guid).Configure();
+
+                // One etude total
+                var etude = EtudeConfigurator.New(etudeName, etudeGuid)
+                    .AddEtudePlayTrigger(
+                        actions: ActionsBuilder.New()
+                            .KingdomActionStartEvent(
+                                eventValue: enchantingEventGuid,     // need to build event first? or at least have the Guid available
+                                randomRegion: false,
+                                delayDays: 0,
+                                startNextMonth: false,
+                                checkTriggerImmediately: false,
+                                checkTriggerOnStart: false)
+                            .CompleteEtude(etude: etudeGuid),
+                        conditions: ConditionsBuilder.New(),
+                        once: false)
+                    .SetActivationCondition(ConditionsBuilder.New())
+                    .Configure();
+
+                var intermediateSword = ItemWeaponConfigurator.New("HadesIntermediateSword", "7E934391-7E13-419A-AD49-033B7B40764C")
+                    .SetDisplayNameText(LocalizationTool.CreateString("IntermediateSwordNameKey", "Hades Intermediate Sword", false))
+                    .SetDescriptionText(LocalizationTool.CreateString("IntermediateSwordDescKey", "This is an intermediate step of relic creation."))
+                    .SetFlavorText(LocalizationTool.CreateString("IntermediateSwordFTKey", "Flavor town text", false))
+                    .SetType("d56c44bc9eb10204c8b386a02c7eed21")
+                    .SetIcon(LongswordPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
+                    {
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
+                    })
+                    .SetCR(13)
+                    .Configure();
 
 
 
@@ -100,31 +204,7 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                     negate: false,
                     quantity: 1);
 
-                PossibleEventSolutions emptySolutions = new();
-                emptySolutions.Entries = new PossibleEventSolution[] 
-                {
-                    Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Counselor; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }),
-                    Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Strategist; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }),
-                    Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Diplomat; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }),
-                    Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.General; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; })
-                };
 
-                //emptySolutions.Entries.AddItem(Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Counselor; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }));
-                //emptySolutions.Entries.AddItem(Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Strategist; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }));
-                //emptySolutions.Entries.AddItem(Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Diplomat; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }));
-                //emptySolutions.Entries.AddItem(Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.General; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }));
-                Tools.LogMessage("DEBUG: Built emptySolutions");
-
-                //EventSolution[] reforgingEventSolutions = new EventSolution[]
-                //{
-                //    new EventSolution{  }
-                //};
-
-                // testing area
-                var LongswordPlus1 = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("03d706655c07d804cb9d5a5583f9aec5");
-                var DaggerPlus1 = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("2a45458f776442e43bba57de65f9b738");
-
-                // end testing area
 
                 BlueprintUnlockableFlag flag_1 = UnlockableFlagConfigurator.New("HadesBladeSwordProject_Enchanting", "2D4A4118-9318-45F6-8D5E-3962D73E0057").Configure();
                 BlueprintItem item_1 = ItemConfigurator.New("Hades Sword", "95CBB4DC-E80E-4360-90A5-82A463F6181A")
@@ -135,7 +215,7 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                 RelicSolution relicSolution_1 = new()
                 {
                     Flag = flag_1,
-                    Item = LongswordPlus1,
+                    Item = intermediateSword,
                     SolutionText = "{g|HadesBlade_Sword}[Choice effects]{/g} A sword",
                     ResultText = "Sword."
                 };
@@ -170,78 +250,111 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                 //    description: reforgingEventDescription,
                 //    solutions: relicSolutions);
 
-                List<EventSolution> reforgingEventSolutions = new();
-                foreach (RelicSolution rs in relicSolutions)
-                {
-                    var ab = ActionsBuilder.New();
-                    if (rs.Item is BlueprintItemEquipmentHand) { ab.GiveHandSlotItemToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
-                    else if (rs.Item is BlueprintItemEquipment) { ab.GiveEquipmentToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
-                    else { ab.GiveItemToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
-                    EventSolution es = Helpers.Create<EventSolution>(c =>
-                    {
-                        c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), rs.SolutionText, false);
-                        c.m_AvailConditions = Constants.Empty.Conditions;
-                        c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
-                        c.m_SuccessEffects = ab.UnlockFlag(rs.Flag, flagValue: 1).Build();
-                        c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), rs.ResultText, false);
-                    });
-                    reforgingEventSolutions.AddItem(es);
-                }
+                // readonly string[] _myArray 
+                //= Enumerable.Range(1, 1000)
+                //    .Select(i => i.ToString())
+                //    .ToArray();
+
+                //List<EventSolution> reforgingEventSolutions = new();
+                //foreach (RelicSolution rs in relicSolutions)
+                //{
+                //EventSolution[] eSolutions = relicSolutions.Select<EventSolution>(rs => {
+                //    Helpers.Create<EventSolution>(c =>
+                //    {
+                //        var ab = ActionsBuilder.New();
+                //        if (rs.Item is BlueprintItemEquipmentHand) { ab.GiveHandSlotItemToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
+                //        else if (rs.Item is BlueprintItemEquipment) { ab.GiveEquipmentToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
+                //        else { ab.GiveItemToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
+                //        c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), rs.SolutionText, false);
+                //        c.m_AvailConditions = Constants.Empty.Conditions;
+                //        c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                //        c.m_SuccessEffects = ab.UnlockFlag(rs.Flag, flagValue: 1).Build();
+                //        c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), rs.ResultText, false);
+                //    });
+                //})
+
+                //    reforgingEventSolutions.AddItem(es);
+                //}
                 Tools.LogMessage("DEBUG: Built relicSolutions List");
 
-                // testing
-                UnlockFlag tflag = new()
-                {
-                    name = "$UnlockFlag$" + BlueprintGuid.NewGuid().ToString(),
-                    m_flag = flag_2.ToReference<BlueprintUnlockableFlagReference>(),
-                    flagValue = 1
-                };
 
-                AddItemToPlayer addItemToPlayer = new()
+                //EventSolution[] reforgingEventSolutions = solutions.Select(r => {
+                //    return Helpers.Create<EventSolution>(c => {
+                //        c.m_SuccessEffects.Actions = ActionsBuilder.New().UnlockFlag(r.Flag).Build().Actions;
+                //    });
+                //}).ToArray();
+
+                // convert RelicSolution to a List<string, BlueprintItem, BlueprintUnlockableFlag, string>
+
+                List<RelicSolution> relics = new();
+
+                // testing
+                //UnlockFlag tflag = new()
+                //{
+                //    name = "$UnlockFlag$" + BlueprintGuid.NewGuid().ToString(),
+                //    m_flag = flag_2.ToReference<BlueprintUnlockableFlagReference>(),
+                //    flagValue = 1
+                //};
+
+                //AddItemToPlayer addItemToPlayer = new()
+                //{
+                //    name = "$AddItemToPlayer$" + BlueprintGuid.NewGuid().ToString(),
+                //    m_ItemToGive = DaggerPlus1.ToReference<BlueprintItemReference>(),
+                //    Silent = false,
+                //    Quantity = 1,
+                //    Identify = true,
+                //    Equip = false,
+                //    PreferredWeaponSet = 0,
+                //    ErrorIfDidNotEquip = true
+                //};
+
+                PossibleEventSolutions emptySolutions = new()
                 {
-                    name = "$AddItemToPlayer$" + BlueprintGuid.NewGuid().ToString(),
-                    m_ItemToGive = DaggerPlus1.ToReference<BlueprintItemReference>(),
-                    Silent = false,
-                    Quantity = 1,
-                    Identify = true,
-                    Equip = false,
-                    PreferredWeaponSet = 0,
-                    ErrorIfDidNotEquip = true
+                    Entries = new PossibleEventSolution[]
+                    {
+                        Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Counselor; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }),
+                        Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Strategist; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }),
+                        Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.Diplomat; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; }),
+                        Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.General; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; })
+                    }
                 };
+                Tools.LogMessage("DEBUG: Built emptySolutions");
+
 
                 //{g|KnightsEmblem_Belt}[Choice effects]{/g} Belt
 
                 //{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g} Shame the fallen knight Linds
-
-                EventSolution dagger_es = Helpers.Create<EventSolution>(c =>
+                EventSolution[] eventSolutions = new EventSolution[]
                 {
-                    ActionList al = ActionsBuilder.New().Build();
-                    al.Actions.AppendToArray(addItemToPlayer);
-                    al.Actions.AppendToArray(tflag);
-                    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), @"{g|KnightsEmblem_Belt}[Choice effects]{/g}Dagger", false);
-                    c.m_AvailConditions = Constants.Empty.Conditions;
-                    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
-                    c.m_UnavailingPlaceholder = Constants.Empty.String;
-                    c.m_SuccessEffects = ActionsBuilder.New()
-                        .GiveHandSlotItemToPlayer(DaggerPlus1, identify: true, quantity: 1, silent: false)
-                        .UnlockFlag(flag_2, flagValue: 1)
-                        .Build();
-                    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "We make dagger", false);
-                });
-                EventSolution sword_es = Helpers.Create<EventSolution>(c =>
-                {
-                    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), @"{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g}Dagger", false);
-                    c.m_AvailConditions = Constants.Empty.Conditions;
-                    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
-                    c.m_UnavailingPlaceholder = Constants.Empty.String;
-                    c.m_SuccessEffects = ActionsBuilder.New()
-                        .GiveHandSlotItemToPlayer(LongswordPlus1, identify: true, quantity: 1, silent: false)
-                        .UnlockFlag(flag_1, flagValue: 1)
-                        .Build();
-                    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "We make Sword", false);
-                });
+                    Helpers.Create<EventSolution>(c =>
+                    {
+                        c.m_SolutionText = LocalizationTool.CreateString(nameof(DaggerPlus1)+"STKey", @"{g|KnightsEmblem_Belt}[Choice effects]{/g}Dagger", false);
+                        c.m_AvailConditions = Constants.Empty.Conditions;
+                        c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                        c.m_UnavailingPlaceholder = Constants.Empty.String;
+                        c.m_SuccessEffects = ActionsBuilder.New()
+                            .GiveHandSlotItemToPlayer(DaggerPlus1, identify: true, quantity: 1, silent: false)
+                            .UnlockFlag(flag_2, flagValue: 1)
+                            .Build();
+                        c.m_ResultText = LocalizationTool.CreateString(nameof(DaggerPlus1)+"RTKey", "We make dagger", false);
+                    }),
+                    Helpers.Create<EventSolution>(c =>
+                    {
+                        c.m_SolutionText = LocalizationTool.CreateString(nameof(LongswordPlus1)+"STKey", @"{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g}"+nameof(LongswordPlus1), false);
+                        c.m_AvailConditions = Constants.Empty.Conditions;
+                        c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                        c.m_UnavailingPlaceholder = Constants.Empty.String;
+                        c.m_SuccessEffects = ActionsBuilder.New()
+                            .GiveHandSlotItemToPlayer(intermediateSword, identify: true, quantity: 1, silent: false)
+                            .UnlockFlag(flag_1, flagValue: 1)
+                            .Build();
+                        c.m_ResultText = LocalizationTool.CreateString(nameof(LongswordPlus1)+"RTKey", "We make Sword", false);
+                    })
+                };
                 //
-                BlueprintCrusadeEvent UnholySymbolOfRovagug_Reforging_event = ResourcesLibrary.TryGetBlueprint<BlueprintCrusadeEvent>("e90dc6bf9f454a2c9879a1cb6b314fc8");
+                //BlueprintCrusadeEvent UnholySymbolOfRovagug_Reforging_event = ResourcesLibrary.TryGetBlueprint<BlueprintCrusadeEvent>("e90dc6bf9f454a2c9879a1cb6b314fc8");
+                //eventSolutions.TrimExcess();
+                //EventSolution[] eventSolutions1 = eventSolutions.ToArray();
 
                 var reforgingEvent = CrusadeEventConfigurator.New(reforgingEventName, reforgingEventGuid)
                     .SetLocalizedName(LocalizationTool.CreateString(reforgingEventName + "NameKey", ProjectDisplayName, false))
@@ -256,7 +369,7 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                     .SetDefaultResolutionType(LeaderType.Counselor)
                     .SetAIStopping(false)
                     .SetSolutions(emptySolutions)
-                    .SetEventSolutions(new EventSolution[] { dagger_es, sword_es })
+                    .SetEventSolutions(eventSolutions)
                     .Configure();
                 reforgingEvent.TriggerCondition = Constants.Empty.Conditions;
                 reforgingEvent.Comment = Constants.Empty.String;
@@ -382,7 +495,7 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                 //    }
                 //};
 
-                BlueprintQuestObjective Obj4_1 = ResourcesLibrary.TryGetBlueprint<BlueprintQuestObjective>("50820c80a44743ab8e29d36aef9c03d2");
+
                 var diplomatActionsList = ActionsBuilder.New().RemoveItemFromPlayer(
                     money: false,
                     removeAll: false,
