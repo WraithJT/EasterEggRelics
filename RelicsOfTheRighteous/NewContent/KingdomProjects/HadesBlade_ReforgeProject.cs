@@ -63,7 +63,7 @@ using static RelicsOfTheRighteous.Utilities.RelicQuestBuilder;
 
 namespace RelicsOfTheRighteous.NewContent.KingdomProjects
 {
-    class HadesSword_ReforgeProject
+    class HadesBlade_ReforgeProject
     {
         [HarmonyPatch(typeof(BlueprintsCache), "Init")]
         static class BlueprintsCache_Init_patch
@@ -76,12 +76,12 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                 if (Initialized) return;
                 Initialized = true;
 
-                PatchHadesSword_ReforgeProject();
+                PatchHadesBlade_ReforgeProject();
                 //try { PatchHadesSword_ReforgeProject(); }
                 //catch (Exception ex) { Tools.LogMessage("EXCEPTION: " + ex.ToString()); }
             }
 
-            public static void PatchHadesSword_ReforgeProject()
+            public static void PatchHadesBlade_ReforgeProject()
             {
                 #region Variable Declaration (don't touch)
                 string unlockFlag1Name;
