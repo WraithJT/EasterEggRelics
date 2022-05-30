@@ -49,17 +49,27 @@ using System.Linq;
 using BlueprintCore.Blueprints.Configurators.Items.Weapons;
 using Kingmaker.View.Equipment;
 using BlueprintCore.Blueprints.Configurators.AreaLogic.Etudes;
+using static Kingmaker.UI.Common.ItemsFilter;
+using Kingmaker.Blueprints.Items.Armors;
+using BlueprintCore.Blueprints.Configurators.Items.Armors;
+using Kingmaker.Blueprints.Items.Shields;
+using Kingmaker.Blueprints.Items.Ecnchantments;
+using Kingmaker.Blueprints.Items.Components;
+using static RelicsOfTheRighteous.Utilities.RelicQuestBuilder;
+using BlueprintCore.Blueprints.Configurators.Items.Shields;
+using BlueprintCore.Blueprints.Configurators.Items.Equipment;
+using Kingmaker.Designers.EventConditionActionSystem.Conditions;
 
 namespace RelicsOfTheRighteous.NewContent.KingdomProjects
 {
     class HadesSword_ReforgeProject
     {
-        private static readonly string BaseName = "HadesBlade";
+        //private static readonly string BaseName = "HadesBlade";
 
-        public static readonly string ProjectGuid = "bfc04a80c017481eacd4d53faaaf6410";
-        private static readonly string ProjectName = BaseName + "_ReforgeProject";
-        private static readonly string ProjectDisplayName = "The Fate of The Blade of No Escape";
-        private static readonly string ProjectDescription = "A skilled craftsman can do some work on the relic.";
+        //public static readonly string ProjectGuid = "bfc04a80c017481eacd4d53faaaf6410";
+        //private static readonly string ProjectName = BaseName + "_ReforgeProject";
+        //private static readonly string ProjectDisplayName = "The Fate of The Blade of No Escape";
+        //private static readonly string ProjectDescription = "A skilled craftsman can do some work on the relic.";
 
 
 
@@ -81,95 +91,203 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
 
             public static void PatchHadesSword_ReforgeProject()
             {
-                // testing references
-                var LongswordPlus1 = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("03d706655c07d804cb9d5a5583f9aec5");
-                var DaggerPlus1 = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("2a45458f776442e43bba57de65f9b738");
-                // end testing references
-
-                // Required references
-                KingdomRoot kingdomRoot = ResourcesLibrary.TryGetBlueprint<KingdomRoot>("f6bd33651fb0ad64d8fa659d3df6e7df");
-                BlueprintQuestObjective Obj4_1 = ResourcesLibrary.TryGetBlueprint<BlueprintQuestObjective>("50820c80a44743ab8e29d36aef9c03d2");
-
-                // Relic quest initiating item
-                BlueprintItemWeapon HadesBlade_EasterEgg = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("372e460865964e4a8e98ebf73f0741ae");
-
-                // Component variables
-                string unlockFlag1Name = "";
-                string unlockFlag1Guid = BlueprintGuid.NewGuid().ToString();
-                string unlockFlag2Name = "";
-                string unlockFlag2Guid = BlueprintGuid.NewGuid().ToString();
-
-                string finalItem1_Enchant1Name = "";
-                string finalItem1_Enchant1Guid = BlueprintGuid.NewGuid().ToString();
-                string finalItem1_Enchant2Name = "";
-                string finalItem1_Enchant2Guid = BlueprintGuid.NewGuid().ToString();
-                string finalItem1_Enchant3Name = "";
-                string finalItem1_Enchant3Guid = BlueprintGuid.NewGuid().ToString();
-
-                string finalItem2_Enchant1Name = "";
-                string finalItem2_Enchant1Guid = BlueprintGuid.NewGuid().ToString();
-                string finalItem2_Enchant2Name = "";
-                string finalItem2_Enchant2Guid = BlueprintGuid.NewGuid().ToString();
-                string finalItem2_Enchant3Name = "";
-                string finalItem2_Enchant3Guid = BlueprintGuid.NewGuid().ToString();
-
-                string intermediateItem1Name = "";
-                string intermediateItem1Guid = BlueprintGuid.NewGuid().ToString();
-
-                string intermediateItem2Name = "";
-                string intermediateItem2Guid = BlueprintGuid.NewGuid().ToString();
-
-                string enchantingEventName = "";
-                string enchantingEventGuid = BlueprintGuid.NewGuid().ToString();
-
-                string item1_EnchantingDecreeName = "";
-                string item1_EnchantingDecreeGuid = BlueprintGuid.NewGuid().ToString();
-
-                string item2_EnchantingDecreeName = "";
-                string item2_EnchantingDecreeGuid = BlueprintGuid.NewGuid().ToString();
-
-                string reforgeEventName = "";
-                string reforgeEventGuid = BlueprintGuid.NewGuid().ToString();
-
-                string reforgeDecreeName = "";
-                string reforgeDecreeGuid = BlueprintGuid.NewGuid().ToString();
-
-                string etudeName = "";
-                string etudeGuid = BlueprintGuid.NewGuid().ToString();
-
-
-                // Base config items
-
-
-
                 /*/ NOTES
                  * figure out Choice Effects preview (TextTemplateEngine, s_TemplatesByTag)
                  * 
                 /*/
 
+                // References
+                var LongswordPlus1 = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("03d706655c07d804cb9d5a5583f9aec5");
+                var DaggerPlus1 = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("2a45458f776442e43bba57de65f9b738");
+
+                // Relic quest initiating item
+                BlueprintItemWeapon HadesBlade_EasterEgg = ResourcesLibrary.TryGetBlueprint<BlueprintItemWeapon>("372e460865964e4a8e98ebf73f0741ae");
+
+                // Component variables
+                #region Component Variables
+                string unlockFlag1Name = "FlagHadesBladeSwordProject_Enchanting";
+                string unlockFlag1Guid = BlueprintGuid.NewGuid().ToString();
+                string unlockFlag2Name = "FlagHadesBladeDaggerProject_Enchanting";
+                string unlockFlag2Guid = BlueprintGuid.NewGuid().ToString();
+
+                RelicItem finalItem1_Enchanted1_Config = new()
+                {
+                    Name = "FinalHadesSword1",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    RelicItemType = ItemType.Weapon,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 1", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 1 descirption", false),
+                    FlavorText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 1 flavor", false)
+                };
+
+                RelicItem finalItem1_Enchanted2_Config = new()
+                {
+                    Name = "FinalHadesSword2",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    RelicItemType = ItemType.Weapon,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 2", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 2 desc", false),
+                    FlavorText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 2 flavor", false)
+                };
+
+                RelicItem finalItem1_Enchanted3_Config = new()
+                {
+                    Name = "FinalHadesSword3",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    RelicItemType = ItemType.Weapon,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 3", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 3 descr", false),
+                    FlavorText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Sword 3 flavy", false)
+                };
+
+                RelicItem finalItem2_Enchanted1_Config = new()
+                {
+                    Name = "FinalHadesDagger1",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    RelicItemType = ItemType.Weapon,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 1", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 1 stuff", false),
+                    FlavorText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 1 falava", false)
+                };
+                RelicItem finalItem2_Enchanted2_Config = new()
+                {
+                    Name = "FinalHadesDagger2",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    RelicItemType = ItemType.Weapon,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 2", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 2 words", false),
+                    FlavorText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 2 asdf", false)
+                };
+                RelicItem finalItem2_Enchanted3_Config = new()
+                {
+                    Name = "FinalHadesDagger3",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    RelicItemType = ItemType.Weapon,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 3", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 3 hello fren", false),
+                    FlavorText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Final Hades Dagger 3 story stuff", false)
+                };
+
+                RelicItem intermediateItem1_Config = new()
+                {
+                    Name = "HadesSword_IntermediateItem",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    RelicItemType = ItemType.Weapon,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Hades Sword", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "This is an intermediate step of relic creation.", false),
+                    FlavorText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Intermediate sword", false)
+                };
+
+                RelicItem intermediateItem2_Config = new()
+                {
+                    Name = "HadesDagger_IntermediateItem",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    RelicItemType = ItemType.Weapon,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Hades Dagger", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "This is an intermediate step of relic creation.", false),
+                    FlavorText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Intermediate dagger", false)
+                };
+
+                RelicEvent enchantingEvent_Config = new()
+                {
+                    Name = "HadesBlade_Enchanting_event",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Enchanting Event", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "", false),
+                };
+
+                RelicProject item1_EnchantingProject_Config = new()
+                {
+                    Name = "HadesBladeSwordProject_Enchanting",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    NextEventGuid = enchantingEvent_Config.Guid,
+                    RequiredItemGuid = intermediateItem1_Config.Guid,
+                    UnlockableFlagGuid = unlockFlag1Guid,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Enchanting Project 1", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Enchanting Project 1 words", false),
+                    DefaultResolutionDescription = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Everything is ready for the relic's augmentation.", false),
+                    MechanicalDescription = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "The relic will be augmented.", false),
+                    IsAct3 = false
+                };
+
+                RelicProject item2_EnchantingProject_Config = new()
+                {
+                    Name = "HadesBladeDaggerProject_Enchanting",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    NextEventGuid = enchantingEvent_Config.Guid,
+                    RequiredItemGuid = intermediateItem2_Config.Guid,
+                    UnlockableFlagGuid = unlockFlag2Guid,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Enchanting Project 2", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Enchanting Project 2 descri", false),
+                    DefaultResolutionDescription = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Everything is ready for the relic's augmentation.", false),
+                    MechanicalDescription = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "The relic will be augmented.", false),
+                    IsAct3 = false
+                };
+
+                RelicEvent reforgingEvent_Config = new()
+                {
+                    Name = "HadesBlade_Reforge_event",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "The Mongrel Blade", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Makin a mongrel thingy", false)
+                };
+
+                RelicProject reforgingProject_Config = new()
+                {
+                    Name = "HadesBlade_ReforgeProject",
+                    Guid = BlueprintGuid.NewGuid().ToString(),
+                    NextEventGuid = reforgingEvent_Config.Guid,
+                    RequiredItemGuid = HadesBlade_EasterEgg.AssetGuidThreadSafe,
+                    DisplayName = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "The Fate of The Blade of No Escape", false),
+                    Description = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "A skilled craftsman can do some work on the relic.", false),
+                    DefaultResolutionDescription = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Everything is ready for the relic's augmentation.", false),
+                    MechanicalDescription = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "The relic will be augmented.", false),
+                    IsAct3 = true
+                };
+
+                string etudeName = "HadesBladeEtude";
+                string etudeGuid = BlueprintGuid.NewGuid().ToString();
+
+                Main.logger.Log("DEBUG: Built base variables");
+                #endregion
+
+                // Base config items
+                #region Base Config Items
                 // One UnlockableFlag for each item type (sword, ring, usable item, etc)
                 var unlockFlag1 = UnlockableFlagConfigurator.New(unlockFlag1Name, unlockFlag1Guid).Configure();
+                Main.logger.Log("DEBUG: Built Unlock Flag 1 => " + unlockFlag1.AssetGuidThreadSafe);
                 var unlockFlag2 = UnlockableFlagConfigurator.New(unlockFlag2Name, unlockFlag2Guid).Configure();
+                Main.logger.Log("DEBUG: Built Unlock Flag 2 => " + unlockFlag2.AssetGuidThreadSafe);
 
                 // One final item for each item type and enchantment path. All items share the same enchantment paths
-                var finalItem1_Enchant1 = ItemConfigurator.New(finalItem1_Enchant1Name, finalItem1_Enchant1Guid).Configure();
-                var finalItem1_Enchant2 = ItemConfigurator.New(finalItem1_Enchant2Name, finalItem1_Enchant2Guid).Configure();
-                var finalItem1_Enchant3 = ItemConfigurator.New(finalItem1_Enchant3Name, finalItem1_Enchant3Guid).Configure();
+                // Match the BlueprintItem type to the ItemType
+                var finalItem1_Enchanted1 = (BlueprintItemWeapon)ItemConstructor(finalItem1_Enchanted1_Config);
+                Main.logger.Log("DEBUG: Constructed Enchanted Item 1-1 => " + finalItem1_Enchanted1.AssetGuidThreadSafe);
+                var finalItem1_Enchanted2 = (BlueprintItemWeapon)ItemConstructor(finalItem1_Enchanted2_Config);
+                Main.logger.Log("DEBUG: Constructed Enchanted Item 1-2 => " + finalItem1_Enchanted2.AssetGuidThreadSafe);
+                var finalItem1_Enchanted3 = (BlueprintItemWeapon)ItemConstructor(finalItem1_Enchanted3_Config);
+                Main.logger.Log("DEBUG: Constructed Enchanted Item 1-3 => " + finalItem1_Enchanted3.AssetGuidThreadSafe);
 
-                var finalItem2_Enchant1 = ItemConfigurator.New(finalItem2_Enchant1Name, finalItem2_Enchant1Guid).Configure();
-                var finalItem2_Enchant2 = ItemConfigurator.New(finalItem2_Enchant2Name, finalItem2_Enchant2Guid).Configure();
-                var finalItem2_Enchant3 = ItemConfigurator.New(finalItem2_Enchant3Name, finalItem2_Enchant3Guid).Configure();
+                var finalItem2_Enchanted1 = (BlueprintItemWeapon)ItemConstructor(finalItem2_Enchanted1_Config);
+                Main.logger.Log("DEBUG: Constructed Enchanted Item 2-1 => " + finalItem2_Enchanted1.AssetGuidThreadSafe);
+                var finalItem2_Enchanted2 = (BlueprintItemWeapon)ItemConstructor(finalItem2_Enchanted2_Config);
+                Main.logger.Log("DEBUG: Constructed Enchanted Item 2-2 => " + finalItem2_Enchanted2.AssetGuidThreadSafe);
+                var finalItem2_Enchanted3 = (BlueprintItemWeapon)ItemConstructor(finalItem2_Enchanted3_Config);
+                Main.logger.Log("DEBUG: Constructed Enchanted Item 2-3 => " + finalItem2_Enchanted3.AssetGuidThreadSafe);
 
                 // One intermediate item for each item type
-                var intermediateItem1 = ItemConfigurator.New(intermediateItem1Name, intermediateItem1Guid).Configure();
-                var intermediateItem2 = ItemConfigurator.New(intermediateItem2Name, intermediateItem2Guid).Configure();
+                // Match the BlueprintItem type to the ItemType
+                var intermediateItem1 = (BlueprintItemWeapon)ItemConstructor(intermediateItem1_Config);
+                Main.logger.Log("DEBUG: Constructed Intermediate Item 1 => " + intermediateItem1.AssetGuidThreadSafe);
+                var intermediateItem2 = (BlueprintItemWeapon)ItemConstructor(intermediateItem2_Config);
+                Main.logger.Log("DEBUG: Constructed Intermediate Item 2 => " + intermediateItem2.AssetGuidThreadSafe);
 
                 // One etude total
                 var etude = EtudeConfigurator.New(etudeName, etudeGuid)
                     .AddEtudePlayTrigger(
                         actions: ActionsBuilder.New()
                             .KingdomActionStartEvent(
-                                eventValue: enchantingEventGuid,     // need to build event first? or at least have the Guid available
+                                eventValue: enchantingEvent_Config.Guid,
                                 randomRegion: false,
                                 delayDays: 0,
                                 startNextMonth: false,
@@ -180,133 +298,7 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                         once: false)
                     .SetActivationCondition(ConditionsBuilder.New())
                     .Configure();
-
-                var intermediateSword = ItemWeaponConfigurator.New("HadesIntermediateSword", "7E934391-7E13-419A-AD49-033B7B40764C")
-                    .SetDisplayNameText(LocalizationTool.CreateString("IntermediateSwordNameKey", "Hades Intermediate Sword", false))
-                    .SetDescriptionText(LocalizationTool.CreateString("IntermediateSwordDescKey", "This is an intermediate step of relic creation."))
-                    .SetFlavorText(LocalizationTool.CreateString("IntermediateSwordFTKey", "Flavor town text", false))
-                    .SetType("d56c44bc9eb10204c8b386a02c7eed21")
-                    .SetIcon(LongswordPlus1.Icon)
-                    .SetCost(5000)
-                    .SetVisualParameters(new WeaponVisualParameters
-                    {
-                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
-                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
-                    })
-                    .SetCR(13)
-                    .Configure();
-
-
-
-                var projectTriggerCondition = ConditionsBuilder.New().ItemsEnough(
-                    itemToCheck: HadesBlade_EasterEgg,
-                    money: false,
-                    negate: false,
-                    quantity: 1);
-
-
-
-                BlueprintUnlockableFlag flag_1 = UnlockableFlagConfigurator.New("HadesBladeSwordProject_Enchanting", "2D4A4118-9318-45F6-8D5E-3962D73E0057").Configure();
-                BlueprintItem item_1 = ItemConfigurator.New("Hades Sword", "95CBB4DC-E80E-4360-90A5-82A463F6181A")
-                    .SetDisplayNameText(LocalizationTool.CreateString("HadesSwordNameKey", "Hades' Sword", false))
-                    .SetDescriptionText(LocalizationTool.CreateString("HadesSwordDescNameKey", "This is an intermediate step of relic creation.", false))
-                    .SetIcon(LongswordPlus1.Icon)
-                    .Configure();
-                RelicSolution relicSolution_1 = new()
-                {
-                    Flag = flag_1,
-                    Item = intermediateSword,
-                    SolutionText = "{g|HadesBlade_Sword}[Choice effects]{/g} A sword",
-                    ResultText = "Sword."
-                };
-                Tools.LogMessage("DEBUG: Built relicSolution_1");
-
-                BlueprintUnlockableFlag flag_2 = UnlockableFlagConfigurator.New("HadesBladeDaggerProject_Enchanting", "434945E4-389B-4795-A457-CF526672437A").Configure();
-                BlueprintItem item_2 = ItemConfigurator.New("Hades Dagger", "AF91C3EC-89E7-4D93-BDAA-BF0B238D52AC")
-                    .SetDisplayNameText(LocalizationTool.CreateString("HadesDaggerNameKey", "Hades' Dagger", false))
-                    .SetDescriptionText(LocalizationTool.CreateString("HadesDaggerDescNameKey", "This is an intermediate step of relic creation.", false))
-                    .SetIcon(DaggerPlus1.Icon)
-                    .Configure();
-                RelicSolution relicSolution_2 = new()
-                {
-                    Flag = flag_2,
-                    Item = DaggerPlus1,
-                    SolutionText = "{g|HadesBlade_Dagger}[Choice effects]{/g} A dagger",
-                    ResultText = "Dagger"
-                };
-                Tools.LogMessage("DEBUG: Built relicSolution_2");
-
-                RelicSolution[] relicSolutions = new RelicSolution[] { relicSolution_1, relicSolution_2 };
-                string reforgingEventName = BaseName + "_Reforging_event";
-                string reforgingEventGuid = "2aa61a2bdb3c4c9889d325565845e840";
-                //string reforgingEventDisplayName = "The Fate of The Blade of No Escape";
-                string reforgingEventDescription =
-                    "We reforgin bro";
-                Tools.LogMessage("DEBUG: set base variables");
-                //var reforgingEvent = RelicQuestBuilder.BuildReforgingEvent(
-                //    name: reforgingEventName,
-                //    guid: reforgingEventGuid,
-                //    displayName: ProjectDisplayName,
-                //    description: reforgingEventDescription,
-                //    solutions: relicSolutions);
-
-                // readonly string[] _myArray 
-                //= Enumerable.Range(1, 1000)
-                //    .Select(i => i.ToString())
-                //    .ToArray();
-
-                //List<EventSolution> reforgingEventSolutions = new();
-                //foreach (RelicSolution rs in relicSolutions)
-                //{
-                //EventSolution[] eSolutions = relicSolutions.Select<EventSolution>(rs => {
-                //    Helpers.Create<EventSolution>(c =>
-                //    {
-                //        var ab = ActionsBuilder.New();
-                //        if (rs.Item is BlueprintItemEquipmentHand) { ab.GiveHandSlotItemToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
-                //        else if (rs.Item is BlueprintItemEquipment) { ab.GiveEquipmentToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
-                //        else { ab.GiveItemToPlayer(rs.Item, identify: true, quantity: 1, silent: false); }
-                //        c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), rs.SolutionText, false);
-                //        c.m_AvailConditions = Constants.Empty.Conditions;
-                //        c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
-                //        c.m_SuccessEffects = ab.UnlockFlag(rs.Flag, flagValue: 1).Build();
-                //        c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), rs.ResultText, false);
-                //    });
-                //})
-
-                //    reforgingEventSolutions.AddItem(es);
-                //}
-                Tools.LogMessage("DEBUG: Built relicSolutions List");
-
-
-                //EventSolution[] reforgingEventSolutions = solutions.Select(r => {
-                //    return Helpers.Create<EventSolution>(c => {
-                //        c.m_SuccessEffects.Actions = ActionsBuilder.New().UnlockFlag(r.Flag).Build().Actions;
-                //    });
-                //}).ToArray();
-
-                // convert RelicSolution to a List<string, BlueprintItem, BlueprintUnlockableFlag, string>
-
-                List<RelicSolution> relics = new();
-
-                // testing
-                //UnlockFlag tflag = new()
-                //{
-                //    name = "$UnlockFlag$" + BlueprintGuid.NewGuid().ToString(),
-                //    m_flag = flag_2.ToReference<BlueprintUnlockableFlagReference>(),
-                //    flagValue = 1
-                //};
-
-                //AddItemToPlayer addItemToPlayer = new()
-                //{
-                //    name = "$AddItemToPlayer$" + BlueprintGuid.NewGuid().ToString(),
-                //    m_ItemToGive = DaggerPlus1.ToReference<BlueprintItemReference>(),
-                //    Silent = false,
-                //    Quantity = 1,
-                //    Identify = true,
-                //    Equip = false,
-                //    PreferredWeaponSet = 0,
-                //    ErrorIfDidNotEquip = true
-                //};
+                Main.logger.Log("DEBUG: Built Etude => " + etude.AssetGuidThreadSafe);
 
                 PossibleEventSolutions emptySolutions = new()
                 {
@@ -318,149 +310,284 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                         Helpers.Create<PossibleEventSolution>(c => { c.Leader = LeaderType.General; c.CanBeSolved = false; c.DCModifier = 0; c.SuccessCount = 0; c.Resolutions = new EventResult[] { }; })
                     }
                 };
-                Tools.LogMessage("DEBUG: Built emptySolutions");
+                Main.logger.Log("DEBUG: Empty Solutions");
+                #endregion
 
-
-                //{g|KnightsEmblem_Belt}[Choice effects]{/g} Belt
-
-                //{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g} Shame the fallen knight Linds
-                EventSolution[] eventSolutions = new EventSolution[]
-                {
-                    Helpers.Create<EventSolution>(c =>
+                // Configure features of each item
+                #region Item Configuration
+                finalItem1_Enchanted1 = ItemWeaponConfigurator.For(finalItem1_Enchanted1)
+                    .SetType(WeaponTypes.Longsword)
+                    .SetIcon(LongswordPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
                     {
-                        c.m_SolutionText = LocalizationTool.CreateString(nameof(DaggerPlus1)+"STKey", @"{g|KnightsEmblem_Belt}[Choice effects]{/g}Dagger", false);
-                        c.m_AvailConditions = Constants.Empty.Conditions;
-                        c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
-                        c.m_UnavailingPlaceholder = Constants.Empty.String;
-                        c.m_SuccessEffects = ActionsBuilder.New()
-                            .GiveHandSlotItemToPlayer(DaggerPlus1, identify: true, quantity: 1, silent: false)
-                            .UnlockFlag(flag_2, flagValue: 1)
-                            .Build();
-                        c.m_ResultText = LocalizationTool.CreateString(nameof(DaggerPlus1)+"RTKey", "We make dagger", false);
-                    }),
-                    Helpers.Create<EventSolution>(c =>
-                    {
-                        c.m_SolutionText = LocalizationTool.CreateString(nameof(LongswordPlus1)+"STKey", @"{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g}"+nameof(LongswordPlus1), false);
-                        c.m_AvailConditions = Constants.Empty.Conditions;
-                        c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
-                        c.m_UnavailingPlaceholder = Constants.Empty.String;
-                        c.m_SuccessEffects = ActionsBuilder.New()
-                            .GiveHandSlotItemToPlayer(intermediateSword, identify: true, quantity: 1, silent: false)
-                            .UnlockFlag(flag_1, flagValue: 1)
-                            .Build();
-                        c.m_ResultText = LocalizationTool.CreateString(nameof(LongswordPlus1)+"RTKey", "We make Sword", false);
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
                     })
-                };
-                //
-                //BlueprintCrusadeEvent UnholySymbolOfRovagug_Reforging_event = ResourcesLibrary.TryGetBlueprint<BlueprintCrusadeEvent>("e90dc6bf9f454a2c9879a1cb6b314fc8");
-                //eventSolutions.TrimExcess();
-                //EventSolution[] eventSolutions1 = eventSolutions.ToArray();
-
-                var reforgingEvent = CrusadeEventConfigurator.New(reforgingEventName, reforgingEventGuid)
-                    .SetLocalizedName(LocalizationTool.CreateString(reforgingEventName + "NameKey", ProjectDisplayName, false))
-                    .SetLocalizedDescription(LocalizationTool.CreateString(reforgingEventName + "DescriptionKey", reforgingEventDescription, false))
-                    .SetResolutionTime(14)
-                    .SetResolveAutomatically(false)
-                    .SetNeedToVisitTheThroneRoom(false)
-                    .SetAICanCheat(false)
-                    .SetSkipRoll(false)
-                    .SetResolutionDC(0)
-                    .SetAutoResolveResult(EventResult.MarginType.Success)
-                    .SetDefaultResolutionType(LeaderType.Counselor)
-                    .SetAIStopping(false)
-                    .SetSolutions(emptySolutions)
-                    .SetEventSolutions(eventSolutions)
+                    .AddToEnchantments("d42fc23b92c640846ac137dc26e000d4")
+                    .SetCR(13)
                     .Configure();
-                reforgingEvent.TriggerCondition = Constants.Empty.Conditions;
-                reforgingEvent.Comment = Constants.Empty.String;
-                reforgingEvent.DefaultResolutionDescription = Constants.Empty.String;
-                Tools.LogMessage("DEBUG: Built reforgingEvent");
+                Main.logger.Log("DEBUG: Built Enchanted Item 1-1 => " + finalItem1_Enchanted1.AssetGuidThreadSafe);
 
-                #region old method
-                var counselorSuccessActions = ActionsBuilder.New().KingdomActionImproveStat(KingdomStats.Type.Diplomacy).Build();
-                EventResult[] counselorEventResults = new EventResult[] {
-                    new EventResult {
-                        Margin = EventResult.MarginType.GreatFail,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.Fail,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.Success,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = counselorSuccessActions,
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.GreatSuccess,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    }
+                finalItem1_Enchanted2 = ItemWeaponConfigurator.For(finalItem1_Enchanted2)
+                    .SetType(WeaponTypes.Longsword)
+                    .SetIcon(LongswordPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
+                    {
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
+                    })
+                    .AddToEnchantments("d42fc23b92c640846ac137dc26e000d4")
+                    .SetCR(13)
+                    .Configure();
+                Main.logger.Log("DEBUG: Built Enchanted Item 1-2 => " + finalItem1_Enchanted2.AssetGuidThreadSafe);
+
+                finalItem1_Enchanted3 = ItemWeaponConfigurator.For(finalItem1_Enchanted3)
+                    .SetType(WeaponTypes.Longsword)
+                    .SetIcon(LongswordPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
+                    {
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
+                    })
+                    .AddToEnchantments("d42fc23b92c640846ac137dc26e000d4")
+                    .SetCR(13)
+                    .Configure();
+                Main.logger.Log("DEBUG: Built Enchanted Item 1-3 => " + finalItem1_Enchanted3.AssetGuidThreadSafe);
+
+                finalItem2_Enchanted1 = ItemWeaponConfigurator.For(finalItem2_Enchanted1)
+                    .SetType(WeaponTypes.Dagger)
+                    .SetIcon(DaggerPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
+                    {
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
+                    })
+                    .AddToEnchantments("d42fc23b92c640846ac137dc26e000d4")
+                    .SetCR(13)
+                    .Configure();
+                Main.logger.Log("DEBUG: Built Enchanted Item 2-1 => " + finalItem2_Enchanted1.AssetGuidThreadSafe);
+
+                finalItem2_Enchanted2 = ItemWeaponConfigurator.For(finalItem2_Enchanted2)
+                    .SetType(WeaponTypes.Dagger)
+                    .SetIcon(DaggerPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
+                    {
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
+                    })
+                    .AddToEnchantments("d42fc23b92c640846ac137dc26e000d4")
+                    .SetCR(13)
+                    .Configure();
+                Main.logger.Log("DEBUG: Built Enchanted Item 2-2 => " + finalItem2_Enchanted2.AssetGuidThreadSafe);
+
+                finalItem2_Enchanted3 = ItemWeaponConfigurator.For(finalItem2_Enchanted3)
+                    .SetType(WeaponTypes.Dagger)
+                    .SetIcon(DaggerPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
+                    {
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
+                    })
+                    .AddToEnchantments("d42fc23b92c640846ac137dc26e000d4")
+                    .SetCR(13)
+                    .Configure();
+                Main.logger.Log("DEBUG: Built Enchanted Item 2-3 => " + finalItem2_Enchanted3.AssetGuidThreadSafe);
+
+                intermediateItem1 = ItemWeaponConfigurator.For(intermediateItem1)
+                    .SetType(WeaponTypes.Longsword)
+                    .SetIcon(LongswordPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
+                    {
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
+                    })
+                    .AddToEnchantments("d42fc23b92c640846ac137dc26e000d4")
+                    .SetCR(13)
+                    .Configure();
+                Main.logger.Log("DEBUG: Built Intermediate Item 1 => " + intermediateItem1.AssetGuidThreadSafe);
+
+                intermediateItem2 = ItemWeaponConfigurator.For(intermediateItem2)
+                    .SetType(WeaponTypes.Dagger)
+                    .SetIcon(DaggerPlus1.Icon)
+                    .SetCost(5000)
+                    .SetVisualParameters(new WeaponVisualParameters
+                    {
+                        m_Projectiles = Array.Empty<BlueprintProjectileReference>(),
+                        m_PossibleAttachSlots = Array.Empty<UnitEquipmentVisualSlotType>(),
+                    })
+                    .AddToEnchantments()
+                    .SetCR(13)
+                    .Configure();
+                Main.logger.Log("DEBUG: Built Intermediate Item 2 => " + intermediateItem2.AssetGuidThreadSafe);
+                #endregion
+
+                #region Enchanting Event
+                //RelicEventSolution relicEventSolution = new() { };
+
+                //var enchantingEvent_Item1Conditions = ConditionsBuilder.New()
+                //    .FlagUnlocked(
+                //        conditionFlag: unlockFlag1,
+                //        exceptSpecifiedValues: false,
+                //        negate: false).Build();
+                //var enchantingEvent_Item2Conditions = ConditionsBuilder.New()
+                //    .FlagUnlocked(
+                //        conditionFlag: unlockFlag2,
+                //        exceptSpecifiedValues: false,
+                //        negate: false).Build();
+
+                //RelicEventSolution relicEventSolution1 = new()
+                //{
+                //    SolutionText = LocalizationTool.CreateString(nameof(intermediateItem1) + "STKey", @"{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g}" + nameof(intermediateItem1), false),
+                //    Item = intermediateItem1,
+                //    Flag = unlockFlag1,
+                //    ResultText = LocalizationTool.CreateString(nameof(intermediateItem1) + "RTKey", "We make Sword", false),
+                //    AvailConditions = Constants.Empty.Conditions
+                //};
+
+                EventSolution[] enchantingEventSolutions = new EventSolution[]
+                {
+                    EventSolutionConstructor(
+                        solutionText:LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "First enchantment", false),
+                        item: finalItem1_Enchanted1,
+                        flag: unlockFlag1,
+                        resultText: LocalizationTool.CreateString(nameof(finalItem1_Enchanted1) + "RTKey", "We make Sword", false),
+                        isReforgeEvent: false),
+                    EventSolutionConstructor(
+                        solutionText:LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Second enchantment", false),
+                        item: finalItem1_Enchanted2,
+                        flag: unlockFlag1,
+                        resultText: LocalizationTool.CreateString(nameof(finalItem1_Enchanted2) + "RTKey", "We make Sword2", false),
+                        isReforgeEvent: false),
+                    EventSolutionConstructor(
+                        solutionText:LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Third enchantment", false),
+                        item: finalItem1_Enchanted3,
+                        flag: unlockFlag1,
+                        resultText: LocalizationTool.CreateString(nameof(finalItem1_Enchanted3) + "RTKey", "We make Sword3", false),
+                        isReforgeEvent: false),
+                    EventSolutionConstructor(
+                        solutionText:LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "First enchantment", false),
+                        item: finalItem2_Enchanted1,
+                        flag: unlockFlag2,
+                        resultText: LocalizationTool.CreateString(nameof(finalItem2_Enchanted1) + "RTKey", "We make Dagger", false),
+                        isReforgeEvent: false),
+                    EventSolutionConstructor(
+                        solutionText:LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "2rd enchantment", false),
+                        item: finalItem2_Enchanted2,
+                        flag: unlockFlag2,
+                        resultText: LocalizationTool.CreateString(nameof(finalItem2_Enchanted2) + "RTKey", "We make Dagger2", false),
+                        isReforgeEvent: false),
+                    EventSolutionConstructor(
+                        solutionText:LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "3rd enchantment", false),
+                        item: finalItem2_Enchanted3,
+                        flag: unlockFlag2,
+                        resultText: LocalizationTool.CreateString(nameof(finalItem2_Enchanted3) + "RTKey", "We make Dagger3", false),
+                        isReforgeEvent: false)
+                    //Helpers.Create<EventSolution>(c =>
+                    //{
+                    //    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "First enchantment", false);
+                    //    c.m_AvailConditions = enchantingEvent_Item1Conditions;
+                    //    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    //    c.m_UnavailingPlaceholder = Constants.Empty.String;
+                    //    c.m_SuccessEffects = ActionsBuilder.New()
+                    //        .GiveHandSlotItemToPlayer(finalItem1_Enchanted1, identify: true, quantity: 1, silent: false)
+                    //        .Build();
+                    //    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Did stuff", false);
+                    //}),
+                    //Helpers.Create<EventSolution>(c =>
+                    //{
+                    //    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Second enchantment", false);
+                    //    c.m_AvailConditions = enchantingEvent_Item1Conditions;
+                    //    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    //    c.m_UnavailingPlaceholder = Constants.Empty.String;
+                    //    c.m_SuccessEffects = ActionsBuilder.New()
+                    //        .GiveHandSlotItemToPlayer(finalItem1_Enchanted2, identify: true, quantity: 1, silent: false)
+                    //        .Build();
+                    //    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Did stuff", false);
+                    //}),
+                    //Helpers.Create<EventSolution>(c =>
+                    //{
+                    //    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Third enchantment", false);
+                    //    c.m_AvailConditions = enchantingEvent_Item1Conditions;
+                    //    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    //    c.m_UnavailingPlaceholder = Constants.Empty.String;
+                    //    c.m_SuccessEffects = ActionsBuilder.New()
+                    //        .GiveHandSlotItemToPlayer(finalItem1_Enchanted3, identify: true, quantity: 1, silent: false)
+                    //        .Build();
+                    //    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Did stuff", false);
+                    //}),
+                    //Helpers.Create<EventSolution>(c =>
+                    //{
+                    //    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "First enchantment", false);
+                    //    c.m_AvailConditions = enchantingEvent_Item2Conditions;
+                    //    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    //    c.m_UnavailingPlaceholder = Constants.Empty.String;
+                    //    c.m_SuccessEffects = ActionsBuilder.New()
+                    //        .GiveHandSlotItemToPlayer(finalItem2_Enchanted1, identify: true, quantity: 1, silent: false)
+                    //        .Build();
+                    //    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Did stuff", false);
+                    //}),
+                    //Helpers.Create<EventSolution>(c =>
+                    //{
+                    //    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Second enchantment", false);
+                    //    c.m_AvailConditions = enchantingEvent_Item2Conditions;
+                    //    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    //    c.m_UnavailingPlaceholder = Constants.Empty.String;
+                    //    c.m_SuccessEffects = ActionsBuilder.New()
+                    //        .GiveHandSlotItemToPlayer(finalItem2_Enchanted2, identify: true, quantity: 1, silent: false)
+                    //        .Build();
+                    //    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Did stuff", false);
+                    //}),
+                    //Helpers.Create<EventSolution>(c =>
+                    //{
+                    //    c.m_SolutionText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Third enchantment", false);
+                    //    c.m_AvailConditions = enchantingEvent_Item2Conditions;
+                    //    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    //    c.m_UnavailingPlaceholder = Constants.Empty.String;
+                    //    c.m_SuccessEffects = ActionsBuilder.New()
+                    //        .GiveHandSlotItemToPlayer(finalItem2_Enchanted3, identify: true, quantity: 1, silent: false)
+                    //        .Build();
+                    //    c.m_ResultText = LocalizationTool.CreateString(BlueprintGuid.NewGuid().ToString(), "Did stuff", false);
+                    //}),
                 };
+                Main.logger.Log("DEBUG: Built Enchanting Event Solutions");
+                enchantingEvent_Config.EventSolutions = enchantingEventSolutions;
 
-                var strategistActionsList = ActionsBuilder.New()
-                    .KingdomActionAddBPRandom(
-                        includeInEventStats: true,
-                        bonus: 1000,
-                        change: new DiceFormula(diceType: DiceType.D100, rollsCount: 10),
-                        resourceType: KingdomResource.Finances)
-                    .KingdomActionAddBPRandom(
-                        includeInEventStats: true,
-                        bonus: 100,
-                        change: new DiceFormula(diceType: DiceType.D100, rollsCount: 1),
-                        resourceType: KingdomResource.Materials)
-                    .Build();
-                EventResult[] strategistEventResults = new EventResult[] {
-                    new EventResult {
-                        Margin = EventResult.MarginType.GreatFail,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.Fail,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.Success,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = strategistActionsList,
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.GreatSuccess,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    }
-                };
+                var enchantingEvent = EventConstructor(enchantingEvent_Config);
 
-                //EventResult[] emptyEventResults = new EventResult[] {
+                //var enchantingEvent = CrusadeEventConfigurator.New(enchantingEventName, enchantingEventGuid)
+                //    .SetLocalizedName(enchantingEventDisplayName)
+                //    .SetLocalizedDescription(enchantingEventDescription)
+                //    .SetResolutionTime(14)
+                //    .SetResolveAutomatically(false)
+                //    .SetNeedToVisitTheThroneRoom(false)
+                //    .SetAICanCheat(false)
+                //    .SetSkipRoll(true)
+                //    .SetResolutionDC(0)
+                //    .SetAutoResolveResult(EventResult.MarginType.Success)
+                //    .SetDefaultResolutionType(LeaderType.Counselor)
+                //    .SetAIStopping(false)
+                //    .SetSolutions(emptySolutions)
+                //    .SetEventSolutions(enchantingEventSolutions)
+                //    .Configure();
+                //enchantingEvent.TriggerCondition = Constants.Empty.Conditions;
+                //enchantingEvent.Comment = Constants.Empty.String;
+                //enchantingEvent.DefaultResolutionDescription = Constants.Empty.String;
+                Main.logger.Log("DEBUG: Built Enchanting Event => " + enchantingEvent.AssetGuidThreadSafe);
+                #endregion
+
+                #region Enchanting Decrees
+                var enchantingProject1 = ProjectConstructor(
+                    relicProject: item1_EnchantingProject_Config,
+                    isEnchantingProject: true);
+
+                //EventResult[] enchantingcounselorEventResults = new EventResult[] {
                 //    new EventResult {
                 //        Margin = EventResult.MarginType.GreatFail,
                 //        LeaderAlignment = AlignmentMaskType.Any,
@@ -481,7 +608,244 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                 //        Margin = EventResult.MarginType.Success,
                 //        LeaderAlignment = AlignmentMaskType.Any,
                 //        Condition = Constants.Empty.Conditions,
+                //        Actions = ActionsBuilder.New().KingdomActionImproveStat(KingdomStats.Type.Diplomacy).Build(),
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatSuccess,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
                 //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    }
+                //};
+                //Main.logger.Log("DEBUG: Built Enchanting Project Counselor Event Results");
+
+                //EventResult[] enchantingstrategistEventResults = new EventResult[] {
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatFail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Fail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Success,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = ActionsBuilder.New()
+                //            .KingdomActionAddBPRandom(
+                //                includeInEventStats: true,
+                //                bonus: 1000,
+                //                change: new DiceFormula(diceType: DiceType.D100, rollsCount: 10),
+                //                resourceType: KingdomResource.Finances)
+                //            .KingdomActionAddBPRandom(
+                //                includeInEventStats: true,
+                //                bonus: 100,
+                //                change: new DiceFormula(diceType: DiceType.D100, rollsCount: 1),
+                //                resourceType: KingdomResource.Materials)
+                //            .Build(),
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatSuccess,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    }
+                //};
+                //Main.logger.Log("DEBUG: Built Enchanting Project Strategist Event Results");
+
+                //var enchantingeventSolutionCounselor = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.Counselor,
+                //    CanBeSolved = false,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = enchantingcounselorEventResults
+                //};
+                //Main.logger.Log("DEBUG: Built Enchanting Project Counselor Event Solution");
+                //var enchantingeventSolutionStrategist = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.Strategist,
+                //    CanBeSolved = false,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = enchantingstrategistEventResults
+                //};
+                //Main.logger.Log("DEBUG: Built Enchanting Project Strategist Event Solution");
+                //var enchantingeventSolutionGeneral = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.General,
+                //    CanBeSolved = false,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = new EventResult[] { }
+                //};
+                //Main.logger.Log("DEBUG: Built Enchanting Project General Event Solution");
+
+                //var enchanting1diplomatActionsList = ActionsBuilder.New()
+                //    .RemoveItemFromPlayer(
+                //        money: false,
+                //        removeAll: false,
+                //        itemToRemove: intermediateItem1,
+                //        silent: false,
+                //        quantity: 1,
+                //        percentage: 0.0f)
+                //    .KingdomActionStartEvent(
+                //        eventValue: item1_EnchantingProject_Config.NextEventGuid,
+                //        randomRegion: false,
+                //        delayDays: 0,
+                //        startNextMonth: false,
+                //        checkTriggerImmediately: false,
+                //        checkTriggerOnStart: false)
+                //    .Build();
+                //Main.logger.Log("DEBUG: Built Enchanting Project 1 Diplomat Actions");
+                //EventResult[] enchanting1diplomatEventResults = new EventResult[] {
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatFail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Fail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Success,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = enchanting1diplomatActionsList,
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatSuccess,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    }
+                //};
+                //Main.logger.Log("DEBUG: Built Enchanting Project 1 Diplomat Event Results");
+
+                //var enchantingevent1SolutionDiplomat = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.Diplomat,
+                //    CanBeSolved = true,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = enchanting1diplomatEventResults
+                //};
+                //Main.logger.Log("DEBUG: Built Enchanting Project 1 Diplomat Event Solution");
+
+                //var enchantingProject1 = KingdomProjectConfigurator.New(item1_EnchantingProject_Config.Name, item1_EnchantingProject_Config.Guid)
+                //    .SetLocalizedName(item1_EnchantingProject_Config.DisplayName)
+                //    .SetLocalizedDescription(item1_EnchantingProject_Config.Description)
+                //    .SetDefaultResolutionDescription(item1_EnchantingProject_Config.DefaultResolutionDescription)
+                //    .SetMechanicalDescription(item1_EnchantingProject_Config.MechanicalDescription)
+                //    .SetInfoType(KingomEventInfoType.None)
+                //    .SetResolutionTime(5)
+                //    .SetResolveAutomatically(false)
+                //    .SetNeedToVisitTheThroneRoom(false)
+                //    .SetAICanCheat(false)
+                //    .SetSkipRoll(true)
+                //    .SetResolutionDC(1)
+                //    .SetAutoResolveResult(EventResult.MarginType.Success)
+                //    .SetDefaultResolutionType(LeaderType.Diplomat)
+                //    .SetAIStopping(false)
+                //    .SetProjectType(KingdomProjectType.Relics)
+                //    .SetSpendRulerTimeDays(0)
+                //    .SetRepeatable(false)
+                //    .SetCooldown(0)
+                //    .SetIsRankUpProject(false)
+                //    .SetRankupProjectFor(KingdomStats.Type.Strategy)
+                //    .SetAIPriority(0)
+                //    .SetTriggerCondition(enchantingEvent_Item1Conditions)
+                //    .SetProjectStartCost(
+                //        projectStartCost: new KingdomResourcesAmount()
+                //        {
+                //            m_Finances = 500,
+                //            m_Materials = 50,
+                //            m_Favors = 50
+                //        })
+                //    .AddEventItemCost(amount: 1, items: new() { intermediateItem1.ToReference<BlueprintItemReference>() })
+                //    .SetSolutions(new PossibleEventSolutions()
+                //    {
+                //        Entries = new PossibleEventSolution[] {
+                //            enchantingeventSolutionCounselor,
+                //            enchantingeventSolutionStrategist,
+                //            enchantingevent1SolutionDiplomat,
+                //            enchantingeventSolutionGeneral
+                //            }
+                //    })
+                //    .Configure();
+                Main.logger.Log("DEBUG: Built Enchanting Project 1 => " + enchantingProject1.AssetGuidThreadSafe);
+
+                var enchantingProject2 = ProjectConstructor(
+                    relicProject: item2_EnchantingProject_Config,
+                    isEnchantingProject: true);
+
+                //var enchanting2diplomatActionsList = ActionsBuilder.New()
+                //    .RemoveItemFromPlayer(
+                //        money: false,
+                //        removeAll: false,
+                //        itemToRemove: intermediateItem2,
+                //        silent: false,
+                //        quantity: 1,
+                //        percentage: 0.0f)
+                //    .KingdomActionStartEvent(
+                //        eventValue: item2_EnchantingProject_Config.NextEventGuid,
+                //        randomRegion: false,
+                //        delayDays: 0,
+                //        startNextMonth: false,
+                //        checkTriggerImmediately: false,
+                //        checkTriggerOnStart: false)
+                //    .Build();
+                //EventResult[] enchanting2diplomatEventResults = new EventResult[] {
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatFail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Fail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Success,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = enchanting2diplomatActionsList,
                 //        StatChanges = new KingdomStats.Changes(){ },
                 //        SuccessCount = 0
                 //    },
@@ -495,147 +859,378 @@ namespace RelicsOfTheRighteous.NewContent.KingdomProjects
                 //    }
                 //};
 
+                //var enchantingevent2SolutionDiplomat = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.Diplomat,
+                //    CanBeSolved = true,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = enchanting2diplomatEventResults
+                //};
 
-                var diplomatActionsList = ActionsBuilder.New().RemoveItemFromPlayer(
-                    money: false,
-                    removeAll: false,
-                    itemToRemove: HadesBlade_EasterEgg,
-                    silent: false,
-                    quantity: 1,
-                    percentage: 0.0f)
-                    .KingdomActionStartEvent(
-                        eventValue: reforgingEvent,
-                        randomRegion: false,
-                        delayDays: 0,
-                        startNextMonth: false,
-                        checkTriggerImmediately: false,
-                        checkTriggerOnStart: false)
-                    .Conditional(
-                        conditions: ConditionsBuilder.New().ObjectiveStatus(negate: false, state: QuestObjectiveState.Started, questObjective: Obj4_1),
-                        ifTrue: ActionsBuilder.New())
-                    .Build();
-                EventResult[] diplomatEventResults = new EventResult[] {
-                    new EventResult {
-                        Margin = EventResult.MarginType.GreatFail,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.Fail,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.Success,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = diplomatActionsList,
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    },
-                    new EventResult {
-                        Margin = EventResult.MarginType.GreatSuccess,
-                        LeaderAlignment = AlignmentMaskType.Any,
-                        Condition = Constants.Empty.Conditions,
-                        Actions = new ActionList(){ },
-                        StatChanges = new KingdomStats.Changes(){ },
-                        SuccessCount = 0
-                    }
-                };
-
-                var eventSolutionCounselor = new PossibleEventSolution()
-                {
-                    Leader = LeaderType.Counselor,
-                    CanBeSolved = false,
-                    DCModifier = 0,
-                    SuccessCount = 0,
-                    Resolutions = counselorEventResults
-                };
-                var eventSolutionStrategist = new PossibleEventSolution()
-                {
-                    Leader = LeaderType.Strategist,
-                    CanBeSolved = false,
-                    DCModifier = 0,
-                    SuccessCount = 0,
-                    Resolutions = strategistEventResults
-                };
-                var eventSolutionDiplomat = new PossibleEventSolution()
-                {
-                    Leader = LeaderType.Diplomat,
-                    CanBeSolved = true,
-                    DCModifier = 0,
-                    SuccessCount = 0,
-                    Resolutions = diplomatEventResults
-                };
-                var eventSolutionGeneral = new PossibleEventSolution()
-                {
-                    Leader = LeaderType.General,
-                    CanBeSolved = false,
-                    DCModifier = 0,
-                    SuccessCount = 0,
-                    Resolutions = new EventResult[] { }
-                };
-
-                var reforgeProject = KingdomProjectConfigurator.New(ProjectName, ProjectGuid)
-                    .SetLocalizedName(LocalizationTool.CreateString(ProjectName + "NameKey", ProjectDisplayName, false))
-                    .SetLocalizedDescription(LocalizationTool.CreateString(ProjectName + "DescKey", ProjectDescription))
-                    .SetDefaultResolutionDescription(LocalizationTool.CreateString("f879ca1671c048a196808408b78a6349", "Everything is ready for the relic's augmentation.", false))
-                    .SetMechanicalDescription(LocalizationTool.CreateString("f110a611db4841aeb95644529fb5087d", "The relic will be augmented.", false))
-                    .SetInfoType(KingomEventInfoType.None)
-                    .SetResolutionTime(5)
-                    .SetResolveAutomatically(false)
-                    .SetNeedToVisitTheThroneRoom(false)
-                    .SetAICanCheat(false)
-                    .SetSkipRoll(true)
-                    .SetResolutionDC(1)
-                    .SetAutoResolveResult(EventResult.MarginType.Success)
-                    .SetDefaultResolutionType(LeaderType.Diplomat)
-                    .SetAIStopping(false)
-                    .SetProjectType(KingdomProjectType.Relics)
-                    .SetSpendRulerTimeDays(0)
-                    .SetRepeatable(false)
-                    .SetCooldown(0)
-                    .SetIsRankUpProject(false)
-                    .SetRankupProjectFor(KingdomStats.Type.Strategy)
-                    .SetAIPriority(0)
-                    .SetTriggerCondition(projectTriggerCondition)
-                    .SetProjectStartCost(
-                        projectStartCost: new KingdomResourcesAmount()
-                        {
-                            m_Finances = 1000,
-                            m_Materials = 100,
-                            m_Favors = 0
-                        })
-                    .AddEventItemCost(amount: 1, items: new() { HadesBlade_EasterEgg.ToReference<BlueprintItemReference>() })
-                    .SetSolutions(new PossibleEventSolutions()
-                    {
-                        Entries = new PossibleEventSolution[] {
-                            eventSolutionCounselor,
-                            eventSolutionStrategist,
-                            eventSolutionDiplomat,
-                            eventSolutionGeneral }
-                    })
-                    .Configure();
+                //var enchantingProject2 = KingdomProjectConfigurator.New(item2_EnchantingProject_Config.Name, item2_EnchantingProject_Config.Guid)
+                //    .SetLocalizedName(item2_EnchantingProject_Config.DisplayName)
+                //    .SetLocalizedDescription(item2_EnchantingProject_Config.Description)
+                //    .SetDefaultResolutionDescription(item2_EnchantingProject_Config.DefaultResolutionDescription)
+                //    .SetMechanicalDescription(item2_EnchantingProject_Config.MechanicalDescription)
+                //    .SetInfoType(KingomEventInfoType.None)
+                //    .SetResolutionTime(5)
+                //    .SetResolveAutomatically(false)
+                //    .SetNeedToVisitTheThroneRoom(false)
+                //    .SetAICanCheat(false)
+                //    .SetSkipRoll(true)
+                //    .SetResolutionDC(1)
+                //    .SetAutoResolveResult(EventResult.MarginType.Success)
+                //    .SetDefaultResolutionType(LeaderType.Diplomat)
+                //    .SetAIStopping(false)
+                //    .SetProjectType(KingdomProjectType.Relics)
+                //    .SetSpendRulerTimeDays(0)
+                //    .SetRepeatable(false)
+                //    .SetCooldown(0)
+                //    .SetIsRankUpProject(false)
+                //    .SetRankupProjectFor(KingdomStats.Type.Strategy)
+                //    .SetAIPriority(0)
+                //    .SetTriggerCondition(enchantingEvent_Item2Conditions)
+                //    .SetProjectStartCost(
+                //        projectStartCost: new KingdomResourcesAmount()
+                //        {
+                //            m_Finances = 500,
+                //            m_Materials = 50,
+                //            m_Favors = 50
+                //        })
+                //    .AddEventItemCost(amount: 1, items: new() { intermediateItem2.ToReference<BlueprintItemReference>() })
+                //    .SetSolutions(new PossibleEventSolutions()
+                //    {
+                //        Entries = new PossibleEventSolution[] {
+                //            enchantingeventSolutionCounselor,
+                //            enchantingeventSolutionStrategist,
+                //            enchantingevent2SolutionDiplomat,
+                //            enchantingeventSolutionGeneral
+                //            }
+                //    })
+                //    .Configure();
+                Main.logger.Log("DEBUG: Built Enchanting Project 2 => " + enchantingProject2.AssetGuidThreadSafe);
                 #endregion
 
-                //var reforgeProject = RelicQuestBuilder.BuildReforgeProject(
-                //    name: ProjectName,
-                //    guid: ProjectGuid,
-                //    displayName: ProjectDisplayName,
-                //    description: ProjectDescription,
-                //    item: HadesBlade_EasterEgg.ToReference<BlueprintItemReference>(),
-                //    isAct3: false,
-                //    nextEvent: reforgingEvent.ToReference<BlueprintKingdomEventBaseReference>()); ; ;
-                //Tools.LogMessage("Built: Hades Sword Reforge Project -> " + reforgeProject.AssetGuidThreadSafe);
+                #region Reforging Event
+                //RelicEventSolution relicEventSolution1 = new()
+                //{
+                //    SolutionText = LocalizationTool.CreateString(nameof(intermediateItem1) + "STKey", @"{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g}" + nameof(intermediateItem1), false),
+                //    Item = intermediateItem1,
+                //    Flag = unlockFlag1,
+                //    ResultText = LocalizationTool.CreateString(nameof(intermediateItem1) + "RTKey", "We make Sword", false),
+                //    AvailConditions = Constants.Empty.Conditions
+                //};
+                //RelicEventSolution relicEventSolution2 = new()
+                //{
+                //    SolutionText = LocalizationTool.CreateString(nameof(intermediateItem2) + "STKey", @"{g|KnightsEmblem_Belt}[Choice effects]{/g}" + nameof(intermediateItem2), false),
+                //    Item = intermediateItem2,
+                //    Flag = unlockFlag2,
+                //    ResultText = LocalizationTool.CreateString(nameof(intermediateItem2) + "RTKey", "We make dagger", false),
+                //    AvailConditions = Constants.Empty.Conditions
+                //};
 
+                EventSolution[] reforgingEventSolutions = new EventSolution[]
+                {
+                    EventSolutionConstructor(
+                        solutionText:LocalizationTool.CreateString(nameof(intermediateItem1) + "STKey", @"{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g}" + nameof(intermediateItem1), false),
+                        item: intermediateItem1,
+                        flag: unlockFlag1,
+                        resultText: LocalizationTool.CreateString(nameof(intermediateItem1) + "RTKey", "We make Sword", false),
+                        isReforgeEvent: true),
+                    EventSolutionConstructor(
+                        solutionText:LocalizationTool.CreateString(nameof(intermediateItem2) + "STKey", @"{g|KnightsEmblem_Belt}[Choice effects]{/g}" + nameof(intermediateItem2), false),
+                        item: intermediateItem2,
+                        flag: unlockFlag2,
+                        resultText: LocalizationTool.CreateString(nameof(intermediateItem2) + "RTKey", "We make dagger", false),
+                        isReforgeEvent: true)
+                    //Helpers.Create<EventSolution>(c =>
+                    //{
+                    //    c.m_SolutionText = LocalizationTool.CreateString(nameof(intermediateItem2)+"STKey", @"{g|KnightsEmblem_Belt}[Choice effects]{/g}"+nameof(intermediateItem2), false);
+                    //    c.m_AvailConditions = Constants.Empty.Conditions;
+                    //    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    //    c.m_UnavailingPlaceholder = Constants.Empty.String;
+                    //    c.m_SuccessEffects = ActionsBuilder.New()
+                    //        .GiveHandSlotItemToPlayer(intermediateItem2, identify: true, quantity: 1, silent: false)
+                    //        .UnlockFlag(unlockFlag2, flagValue: 1)
+                    //        .Build();
+                    //    c.m_ResultText = LocalizationTool.CreateString(nameof(DaggerPlus1)+"RTKey", "We make dagger", false);
+                    //}),
+                    //Helpers.Create<EventSolution>(c =>
+                    //{
+                    //    c.m_SolutionText = LocalizationTool.CreateString(nameof(intermediateItem1)+"STKey", @"{g|KnightsEmblem_Chainmail_Unholy}[Choice effects]{/g}"+nameof(intermediateItem1), false);
+                    //    c.m_AvailConditions = Constants.Empty.Conditions;
+                    //    c.m_UnavailingBehaviour = UnavailingBehaviour.HideSolution;
+                    //    c.m_UnavailingPlaceholder = Constants.Empty.String;
+                    //    c.m_SuccessEffects = ActionsBuilder.New()
+                    //        .GiveHandSlotItemToPlayer(intermediateItem1, identify: true, quantity: 1, silent: false)
+                    //        .UnlockFlag(unlockFlag1, flagValue: 1)
+                    //        .Build();
+                    //    c.m_ResultText = LocalizationTool.CreateString(nameof(LongswordPlus1)+"RTKey", "We make Sword", false);
+                    //})
+                };
+                Main.logger.Log("DEBUG: Built Reforging Event Solutions");
+                reforgingEvent_Config.EventSolutions = reforgingEventSolutions;
+
+                var reforgingEvent = EventConstructor(reforgingEvent_Config);
+
+                //var reforgingEvent = CrusadeEventConfigurator.New(reforgingEvent_Config.Name, reforgingEvent_Config.Guid)
+                //    .SetLocalizedName(reforgingEvent_Config.DisplayName)
+                //    .SetLocalizedDescription(reforgingEvent_Config.Description)
+                //    .SetResolutionTime(14)
+                //    .SetResolveAutomatically(false)
+                //    .SetNeedToVisitTheThroneRoom(false)
+                //    .SetAICanCheat(false)
+                //    .SetSkipRoll(false)
+                //    .SetResolutionDC(0)
+                //    .SetAutoResolveResult(EventResult.MarginType.Success)
+                //    .SetDefaultResolutionType(LeaderType.Counselor)
+                //    .SetAIStopping(false)
+                //    .SetSolutions(emptySolutions)
+                //    .SetEventSolutions(reforgingEventSolutions)
+                //    .Configure();
+                //reforgingEvent.TriggerCondition = Constants.Empty.Conditions;
+                //reforgingEvent.Comment = Constants.Empty.String;
+                //reforgingEvent.DefaultResolutionDescription = Constants.Empty.String;
+
+                Main.logger.Log("DEBUG: Built Reforging Event => " + reforgingEvent.AssetGuidThreadSafe);
+                #endregion
+
+                #region Reforging Project
+                var reforgingProject = ProjectConstructor(
+                    relicProject: reforgingProject_Config,
+                    isEnchantingProject: false);
+
+                //var reforgingProjectTriggerCondition = ConditionsBuilder.New().ItemsEnough(
+                //    itemToCheck: reforgingProject_Config.RequiredItemGuid,
+                //    money: false,
+                //    negate: false,
+                //    quantity: 1);
+                //Main.logger.Log("DEBUG: Built Reforge Project Trigger Condition");
+
+                //EventResult[] counselorEventResults = new EventResult[] {
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatFail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Fail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Success,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = ActionsBuilder.New().KingdomActionImproveStat(KingdomStats.Type.Diplomacy).Build(),
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatSuccess,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    }
+                //};
+
+                //EventResult[] strategistEventResults = new EventResult[] {
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatFail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Fail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Success,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = ActionsBuilder.New()
+                //            .KingdomActionAddBPRandom(
+                //                includeInEventStats: true,
+                //                bonus: 1000,
+                //                change: new DiceFormula(diceType: DiceType.D100, rollsCount: 10),
+                //                resourceType: KingdomResource.Finances)
+                //            .KingdomActionAddBPRandom(
+                //                includeInEventStats: true,
+                //                bonus: 100,
+                //                change: new DiceFormula(diceType: DiceType.D100, rollsCount: 1),
+                //                resourceType: KingdomResource.Materials)
+                //            .Build(),
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatSuccess,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    }
+                //};
+
+                //var diplomatActionsList = ActionsBuilder.New().RemoveItemFromPlayer(
+                //    money: false,
+                //    removeAll: false,
+                //    itemToRemove: HadesBlade_EasterEgg,
+                //    silent: false,
+                //    quantity: 1,
+                //    percentage: 0.0f)
+                //    .KingdomActionStartEvent(
+                //        eventValue: reforgingProject_Config.NextEventGuid,
+                //        randomRegion: false,
+                //        delayDays: 0,
+                //        startNextMonth: false,
+                //        checkTriggerImmediately: false,
+                //        checkTriggerOnStart: false)
+                //    .Conditional(
+                //        conditions: ConditionsBuilder.New().ObjectiveStatus(negate: false, state: QuestObjectiveState.Started, questObjective: Obj4_1),
+                //        ifTrue: ActionsBuilder.New())
+                //    .Build();
+                //EventResult[] diplomatEventResults = new EventResult[] {
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatFail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Fail,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.Success,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = diplomatActionsList,
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    },
+                //    new EventResult {
+                //        Margin = EventResult.MarginType.GreatSuccess,
+                //        LeaderAlignment = AlignmentMaskType.Any,
+                //        Condition = Constants.Empty.Conditions,
+                //        Actions = new ActionList(){ },
+                //        StatChanges = new KingdomStats.Changes(){ },
+                //        SuccessCount = 0
+                //    }
+                //};
+                //Main.logger.Log("DEBUG: Built Reforge Project Event Results");
+
+                //var eventSolutionCounselor = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.Counselor,
+                //    CanBeSolved = false,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = counselorEventResults
+                //};
+                //var eventSolutionStrategist = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.Strategist,
+                //    CanBeSolved = false,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = strategistEventResults
+                //};
+                //var eventSolutionDiplomat = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.Diplomat,
+                //    CanBeSolved = true,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = diplomatEventResults
+                //};
+                //var eventSolutionGeneral = new PossibleEventSolution()
+                //{
+                //    Leader = LeaderType.General,
+                //    CanBeSolved = false,
+                //    DCModifier = 0,
+                //    SuccessCount = 0,
+                //    Resolutions = new EventResult[] { }
+                //};
+                //Main.logger.Log("DEBUG: Built Reforge Project Event Solutions");
+
+
+                //var reforgingProject = KingdomProjectConfigurator.New(reforgingProject_Config.Name, reforgingProject_Config.Guid)
+                //    .SetLocalizedName(reforgingProject_Config.DisplayName)
+                //    .SetLocalizedDescription(reforgingProject_Config.Description)
+                //    .SetDefaultResolutionDescription(reforgingProject_Config.DefaultResolutionDescription)
+                //    .SetMechanicalDescription(reforgingProject_Config.MechanicalDescription)
+                //    .SetInfoType(KingomEventInfoType.None)
+                //    .SetResolutionTime(5)
+                //    .SetResolveAutomatically(false)
+                //    .SetNeedToVisitTheThroneRoom(false)
+                //    .SetAICanCheat(false)
+                //    .SetSkipRoll(true)
+                //    .SetResolutionDC(1)
+                //    .SetAutoResolveResult(EventResult.MarginType.Success)
+                //    .SetDefaultResolutionType(LeaderType.Diplomat)
+                //    .SetAIStopping(false)
+                //    .SetProjectType(KingdomProjectType.Relics)
+                //    .SetSpendRulerTimeDays(0)
+                //    .SetRepeatable(false)
+                //    .SetCooldown(0)
+                //    .SetIsRankUpProject(false)
+                //    .SetRankupProjectFor(KingdomStats.Type.Strategy)
+                //    .SetAIPriority(0)
+                //    .SetTriggerCondition(reforgingProjectTriggerCondition)
+                //    .SetProjectStartCost(
+                //        projectStartCost: new KingdomResourcesAmount()
+                //        {
+                //            m_Finances = 1000,
+                //            m_Materials = 100,
+                //            m_Favors = 0
+                //        })
+                //    .AddEventItemCost(amount: 1, items: new() { HadesBlade_EasterEgg.ToReference<BlueprintItemReference>() })
+                //    .SetSolutions(new PossibleEventSolutions()
+                //    {
+                //        Entries = new PossibleEventSolution[] {
+                //            eventSolutionCounselor,
+                //            eventSolutionStrategist,
+                //            eventSolutionDiplomat,
+                //            eventSolutionGeneral
+                //            }
+                //    })
+                //    .Configure();
+                Main.logger.Log("DEBUG: Built Reforge Project => " + reforgingProject.AssetGuidThreadSafe);
+                #endregion
+
+                #region Add Projects
                 if (Main.Settings.useRelicsOfTheRighteous == false) { return; }
-                kingdomRoot.m_KingdomProjectEvents.Add(reforgeProject.ToReference<BlueprintKingdomProjectReference>());
+                AddProjectToKingdomRoot(enchantingProject1);
+                Main.logger.Log("DEBUG: Added Enchanting Project => " + enchantingProject1.AssetGuidThreadSafe);
+                AddProjectToKingdomRoot(enchantingProject2);
+                Main.logger.Log("DEBUG: Added Enchanting Project => " + enchantingProject2.AssetGuidThreadSafe);
+                AddProjectToKingdomRoot(reforgingProject);
+                Main.logger.Log("DEBUG: Added Reforge Project => " + reforgingProject.AssetGuidThreadSafe);
+                #endregion
             }
         }
     }
