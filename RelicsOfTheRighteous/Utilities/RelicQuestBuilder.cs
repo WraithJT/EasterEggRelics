@@ -401,10 +401,10 @@ namespace RelicsOfTheRighteous.Utilities
             else
             {
                 es.m_AvailConditions = ConditionsBuilder.New()
-                 .FlagUnlocked(
-                     conditionFlag: flag,
-                     exceptSpecifiedValues: false,
-                     negate: false).Build();
+                    .FlagUnlocked(
+                        conditionFlag: flag,
+                        exceptSpecifiedValues: false,
+                        negate: false).Build();
             }
 
             return es;

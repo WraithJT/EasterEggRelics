@@ -2,6 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
+using System.Collections.Generic;
 
 namespace RelicsOfTheRighteous
 {
@@ -9,6 +10,8 @@ namespace RelicsOfTheRighteous
     {
         internal static UnityModManager.ModEntry.ModLogger logger;
         internal static UnityModManager.ModEntry ModContext_RotR;
+        internal static string BlueprintsFile;
+        internal static Dictionary<string, string> Blueprints;
         public static Settings Settings;
         public static bool Enabled;
 
@@ -16,6 +19,8 @@ namespace RelicsOfTheRighteous
         {
             var harmony = new Harmony(modEntry.Info.Id);
             ModContext_RotR = modEntry;
+            BlueprintsFile = modEntry.Path + @"Blueprints\Blueprints.json";
+            Blueprints = Tools.LoadBlueprints();
             //Harmony.DEBUG = true;
             logger = modEntry.Logger;
             Settings = Settings.Load<Settings>(modEntry);
@@ -47,5 +52,7 @@ namespace RelicsOfTheRighteous
         {
             Settings.Save(modEntry);
         }
+
+
     }
 }

@@ -79,6 +79,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Blueprints\Blueprints.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Info.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
