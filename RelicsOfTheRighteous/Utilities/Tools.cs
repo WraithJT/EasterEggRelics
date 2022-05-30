@@ -65,7 +65,6 @@ namespace RelicsOfTheRighteous.Utilities
         public static void SaveBlueprints()
         {
             File.WriteAllText(Main.BlueprintsFile, JsonConvert.SerializeObject(Main.Blueprints, _options));
-            //LogMessage("DEBUG: Saved Blueprints");
         }
 
         public static string CreateGuid(string key)
@@ -76,7 +75,6 @@ namespace RelicsOfTheRighteous.Utilities
                 newGuid = BlueprintGuid.NewGuid().ToString();
                 Main.Blueprints.Add(key, newGuid);
                 LogMessage("New GUID created for key = > " + key + " ==> " + newGuid);
-                //SaveBlueprints(Main.Blueprints, Main.BlueprintsFile);
             }
             else if (Main.Blueprints.ContainsKey(key))
             {
@@ -88,7 +86,6 @@ namespace RelicsOfTheRighteous.Utilities
                 newGuid = BlueprintGuid.NewGuid().ToString();
                 Main.Blueprints.Add(key, newGuid);
                 LogMessage("New GUID created for key = > " + key + " ==> " + newGuid);
-                //SaveBlueprints(Main.Blueprints, Main.BlueprintsFile);
             }
             return newGuid;
         }
